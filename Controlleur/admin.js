@@ -68,7 +68,7 @@ module.exports. updateProduit = (req, res,next) => {
       });
 };
 
-module.exports.chercherAdmin=(req,res)=>{
+module.exports.chercherAdmin=(req,res,next)=>{
 
     const partOfPrenom=req.query.prenom
     const rechercheSQL = "SELECT * FROM admin WHERE prenom  LIKE  ?";
@@ -76,11 +76,23 @@ module.exports.chercherAdmin=(req,res)=>{
     const rechercheValue = "%" + partOfPrenom + "%";
 
     // Exécutez la requête avec le prénom en tant que paramètre
-    connection.query(rechercheSQL, [prenom], (err, resultats) => {
+    connection.query(rechercheSQL, [rechercheValue], (err, resultats) => {
       if (err) {
     next(err);
       }
       return res.status(200).json(resultats);
     })
 
+}
+module.exports.disactiverAdmin=(req,res,next)=>{
+     
+ const disactive= req.body.disactive;
+  const postId = req.params.id;
+
+      const q="UPDATE admin SET  `disactive`=? where `id-admin`=?";
+    const values = [disactive]
+    db.query(q, [...values], (err, data) => {
+      if (err) return next(err) //500
+      return res.json("admin  has been updated.");
+    });
 }

@@ -2,7 +2,7 @@ const express = require("express");
 
 const {
  getvilles, deletville,addville
-} = require("../controllers/admin.js");
+} = require("../Controlleur/ville.js");
 
 const router = express.Router();
 
