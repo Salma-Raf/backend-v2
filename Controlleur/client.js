@@ -4,3 +4,6 @@ const nodemailer = require("nodemailer");
 
 module.exports.getclients = (req, res) => {
 };
+
+module.exports.addclient = (req, res) => {
+};
