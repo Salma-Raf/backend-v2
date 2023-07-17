@@ -75,13 +75,11 @@ module.exports.chercherestau=(req,res)=>{
 
 module.exports.disactiverestau=(req,res)=>{
     const disactive= req.body.disactive;
-    const postId = req.params.id;
-  
-        const q="UPDATE admin SET  `disactive`=? where `id-admin`=?";
-      const values = [disactive]
+    const postIde = req.params.id;
+        const q="UPDATE restaurant SET  `disponibilite`=? where `id-restau`=?";
+      const values = [disactive,postIde]
       db.query(q, [...values], (err, data) => {
         if (err) return next(err) //500
-        return res.json("admin  has been updated.");
+        return res.json("restaurant  has been updated.");
       });
-
 }

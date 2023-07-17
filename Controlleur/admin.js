@@ -89,7 +89,7 @@ module.exports.disactiverAdmin=(req,res,next)=>{
  const disactive= req.body.disactive;
   const postId = req.params.id;
 
-      const q="UPDATE admin SET  `disactive`=? where `id-admin`=?";
+      const q="UPDATE admin SET  `dispo-admin`=? where `id-admin`=?";
     const values = [disactive,postId]
     db.query(q, [...values], (err, data) => {
       if (err) return next(err) //500
