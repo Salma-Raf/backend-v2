@@ -74,17 +74,14 @@ module.exports.chercherestau=(req,res)=>{
 }
 
 module.exports.disactiverestau=(req,res)=>{
-    const nom_restau=req.query.nom_restau
-    const rechercheSQL = "SELECT * FROM restaurant WHERE nom-restau  LIKE  ?";
-
-    const rechercheValue = "%" + nom_restau + "%";
-
-    // Exécutez la requête avec le prénom en tant que paramètre
-    connection.query(rechercheSQL, [rechercheValue], (err, resultats) => {
-      if (err) {
-    next(err);
-      }
-      return res.status(200).json(resultats);
-    })
+    const disactive= req.body.disactive;
+    const postId = req.params.id;
+  
+        const q="UPDATE admin SET  `disactive`=? where `id-admin`=?";
+      const values = [disactive]
+      db.query(q, [...values], (err, data) => {
+        if (err) return next(err) //500
+        return res.json("admin  has been updated.");
+      });
 
 }
