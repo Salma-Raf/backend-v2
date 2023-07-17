@@ -12,6 +12,7 @@ db.query(q, [], (err, data) => {
 };
 module.exports. addAdmin = (req, res,next) => {
   const  {nom_admin,prenom_admin,email_admin,numero_admin,url_img,role_admin,dispo_admin,mdp}=req.body
+  console.log(numero_admin)
     const q = "SELECT * FROM admin WHERE `email-admin` = ?";
 
     db.query(q, [email_admin], (err, data) => {
@@ -21,7 +22,7 @@ module.exports. addAdmin = (req, res,next) => {
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(mdp, salt);
         const q =
-          "INSERT INTO `admin`(`nom-admin`,`prenom-admin`,`email_admin`,`numero_admin`,`url_img`,`role_admin`,`dispo_admin`,`mdp`) VALUES (?)";
+          "INSERT INTO `admin`(`nom-admin`,`prenom-admin`,`email-admin`,`numero-admin`,`url-img`,`role-admin`,`dispo-admin`,`mdp`) VALUES (?)";
         const values = [
             nom_admin ,
             prenom_admin,
@@ -45,25 +46,41 @@ module.exports. deleteAdmin = (req, res,next) => {
 
       
       const postId = req.params.id;
-      const q = "delete  FROM admin WHERE `id_admin` = ?";
+      const q = "delete  FROM admin WHERE `id-admin` = ?";
       db.query(q, [postId], (err, data) => {
         if (err) return next(err) //403
         return res.status(200).json("admin has been deleted!");
       });
 };
-module.exports. updateProduit = (req, res) => {
+module.exports. updateProduit = (req, res,next) => {
     
     const  {nom_admin,prenom_admin,email_admin,numero_admin,url_img,role_admin,dispo_admin,mdp}=req.body  
-  
-    
-        const q="UPDATE admin SET  `nom_admin`=? and `prenom-admin`=?  and  where n_panie=?";
-      const val = cmd.vendu ? cmd.vendu : cmd.annuler;
-      const values = [val, cmd.n_panie];
+    const postId = req.params.id;
+
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(mdp, salt);
+        const q="UPDATE admin SET  `nom-admin`=? and `prenom-admin`=? and  `email-admin`=? and  `numero-admin`=? and  `url-img`=? and `role-admin`=? and  `dispo-admin`=? and mdp=?  where `id-admin`=?";
+      const values = [nom_admin,prenom_admin,email_admin,numero_admin,url_img,role_admin,dispo_admin,hash,postId]
+    //   console.log(email_admin)
       db.query(q, [...values], (err, data) => {
-        if (err) return res.status(500).json(err);
-        return res.json("commentde  has been updated.");
+        if (err) return next(err) //500
+        return res.json("admin  has been updated.");
       });
 };
 
 module.exports.chercherAdmin=(req,res)=>{
+
+    const partOfPrenom=req.query.prenom
+    const rechercheSQL = "SELECT * FROM admin WHERE prenom  LIKE  ?";
+
+    const rechercheValue = "%" + partOfPrenom + "%";
+
+    // Exécutez la requête avec le prénom en tant que paramètre
+    connection.query(rechercheSQL, [prenom], (err, resultats) => {
+      if (err) {
+    next(err);
+      }
+      return res.status(200).json(resultats);
+    })
+
 }

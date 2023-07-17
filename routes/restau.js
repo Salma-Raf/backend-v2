@@ -2,7 +2,7 @@ const express = require("express");
 
 const {
  getrestau, deletrestau ,adrestau,updaterestau,chercherestau,disactiverestau
-} = require("../controllers/admin.js");
+} = require("../Controlleur/restau.js");
 
 const router = express.Router();
 
