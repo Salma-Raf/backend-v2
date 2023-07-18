@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.get("/", getrestau);
 router.get("/chercher", chercherestau);
-router.get("/disactiver", disactiverestau);
+router.post("/disactiver/:id", disactiverestau);
 router.post("/", adrestau);
 router.delete("/:id", deletrestau);
 router.put("/:id", updaterestau);

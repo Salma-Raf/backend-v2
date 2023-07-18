@@ -1,6 +1,6 @@
 const { db } = require("../db.js");
 const jwt = require("jsonwebtoken");
-const nodemailer = require("nodemailer");
+// const nodemailer = require("nodemailer");
 
 module.exports.getclients = (req, res) => {
   const q = "SELECT * FROM client ";

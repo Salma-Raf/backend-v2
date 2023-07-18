@@ -52,14 +52,15 @@ module.exports. deleteAdmin = (req, res,next) => {
         return res.status(200).json("admin has been deleted!");
       });
 };
-module.exports. updateProduit = (req, res,next) => {
+module.exports.updateadmin = (req, res,next) => {
     
     const  {nom_admin,prenom_admin,email_admin,numero_admin,url_img,role_admin,dispo_admin,mdp}=req.body  
     const postId = req.params.id;
+    console.log(postId)
 
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(mdp, salt);
-        const q="UPDATE admin SET  `nom-admin`=? and `prenom-admin`=? and  `email-admin`=? and  `numero-admin`=? and  `url-img`=? and `role-admin`=? and  `dispo-admin`=? and mdp=?  where `id-admin`=?";
+        const q="UPDATE admin SET  `nom-admin`=? , `prenom-admin`=? ,  `email-admin`=? ,  `numero-admin`=? ,  `url-img`=? , `role-admin`=? ,  `dispo-admin`=? , mdp=?  where `id-admin`=?";
       const values = [nom_admin,prenom_admin,email_admin,numero_admin,url_img,role_admin,dispo_admin,hash,postId]
     //   console.log(email_admin)
       db.query(q, [...values], (err, data) => {
@@ -71,13 +72,16 @@ module.exports. updateProduit = (req, res,next) => {
 module.exports.chercherAdmin=(req,res,next)=>{
 
     const partOfPrenom=req.query.prenom
-    const rechercheSQL = "SELECT * FROM admin WHERE prenom  LIKE  ?";
+    console.log(partOfPrenom)
+    const rechercheSQL = "SELECT * FROM admin WHERE `prenom-admin`	  LIKE  ?";
 
     const rechercheValue = "%" + partOfPrenom + "%";
+    console.log(rechercheValue)
 
     // Exécutez la requête avec le prénom en tant que paramètre
-    connection.query(rechercheSQL, [rechercheValue], (err, resultats) => {
+    db.query(rechercheSQL, [rechercheValue], (err, resultats) => {
       if (err) {
+
     next(err);
       }
       return res.status(200).json(resultats);
