@@ -1,5 +1,5 @@
 const { db } = require("../db.js");
-// const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 
 module.exports.getrestau = (req, res) => {
     
@@ -13,16 +13,16 @@ db.query(q, [], (err, data) => {
 };
 module.exports. deletrestau = (req, res) => {
     const id_restau = req.params.id;
-    const q = "delete  FROM restaurant  WHERE `id-restau` = ?";
+    const q = "update   restaurant set supp=1 WHERE `id-restau` = ?";
     db.query(q, [id_restau], (err, data) => {
       if (err) return next(err) //403
       return res.status(200).json("restaurant has been deleted!");
     });
 };
-module.exports.adrestau = (req, res) => {
+module.exports.adrestau = (req, res,next) => {
     const  {nom_restau,ville_restau,tarif,contact,disponibilite,email,logo,mdp}=req.body
-    console.log(numero_admin)
-      const q = "SELECT * FROM restaurant WHERE `nom_restau` = ? or  email=?  ";
+    console.log({nom_restau,ville_restau,tarif,contact,disponibilite,email,logo,mdp})
+      const q = "SELECT * FROM restaurant WHERE `nom-restau` = ? or  email=?  ";
   
       db.query(q, [nom_restau,email], (err, data) => {
         if (err) return next(err)//500
@@ -41,31 +41,30 @@ module.exports.adrestau = (req, res) => {
           });
       });
 };
-module.exports. updaterestau = (req, res) => {
+module.exports. updaterestau = (req, res,next) => {
 
     const  {nom_restau,ville_restau,tarif,contact,disponibilite,email,logo,mdp}=req.body
     const id_restau = req.params.id;
 
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(mdp, salt);
-        const q="UPDATE restaurant SET  `nom-restau`=? and `ville-restau`=? and  `tarif`=? and  `contact`=? and  `disponibilite`=? and `email`=? and  `logo`=? and mdp=?  where `id-restau`=?";
+        const q="UPDATE restaurant SET  `nom-restau`=? , `ville-restau`=? ,  `tarif`=? and  `contact`=? ,  `disponibilite`=? , `email`=? ,  `logo`=? , mdp=?  where `id-restau`=?";
     //   console.log(email_admin)
     const values = [
-        nom_restau,ville_restau,tarif,contact,disponibilite,email,logo,hash];
+        nom_restau,ville_restau,tarif,contact,disponibilite,email,logo,hash,id_restau];
       db.query(q, [...values], (err, data) => {
         if (err) return next(err) //500
         return res.json("restau  has been updated.");
       });
 };
 
-module.exports.chercherestau=(req,res)=>{
+module.exports.chercherestau=(req,res,next)=>{
     const nom_restau=req.query.nom_restau
-    const rechercheSQL = "SELECT * FROM restaurant WHERE nom-restau  LIKE  ?";
+    const rechercheSQL = "SELECT * FROM restaurant WHERE `nom-restau`  LIKE  ?";
 
     const rechercheValue = "%" + nom_restau + "%";
 
-    // Exécutez la requête avec le prénom en tant que paramètre
-    connection.query(rechercheSQL, [rechercheValue], (err, resultats) => {
+    db.query(rechercheSQL, [rechercheValue], (err, resultats) => {
       if (err) {
     next(err);
       }
@@ -73,9 +72,10 @@ module.exports.chercherestau=(req,res)=>{
     })
 }
 
-module.exports.disactiverestau=(req,res)=>{
+module.exports.disactiverestau=(req,res,next)=>{
+
     const disactive= req.body.disactive;
-    const postIde = req.params.id;
+    const postIde = +req.params.id;
         const q="UPDATE restaurant SET  `disponibilite`=? where `id-restau`=?";
       const values = [disactive,postIde]
       db.query(q, [...values], (err, data) => {

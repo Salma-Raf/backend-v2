@@ -2,6 +2,10 @@ const express = require("express");
 const cors=require("cors")
 const admin = require("./routes/Admin.js");
 const ville=require("./routes/ville.js")
+const commande=require("./routes/commande.js")
+
+const livreur=require("./routes/livreur.js")
+const restau=require("./routes/restau.js")
 
 const app = express();
 app.use(cors());
@@ -12,6 +16,11 @@ app.use("/api/admin", admin);
 app.use("/api/ville", ville);
 
 
+
+app.use("/api/commande", commande);
+app.use("/api/resteu", restau);
+
+app.use("/api/livreur", livreur);
 
 
 app.use((err, req, res, next) => {

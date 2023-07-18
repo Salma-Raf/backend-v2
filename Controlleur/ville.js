@@ -8,7 +8,7 @@ db.query(q, [], (err, data) => {
   return res.status(200).json(data);
 });
 };
-module.exports. addville = (req, res,next) => {
+module.exports.addville = (req, res,next) => {
   const  {nom_ville}=req.body;
 const q = "SELECT * FROM ville WHERE `nom-ville` = ?";
 
