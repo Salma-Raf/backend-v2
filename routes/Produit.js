@@ -1,11 +1,14 @@
 const express = require("express");
 
 const {
-    getproduits, deletproduit ,adproduit,updatePproduit,chercheproduit
+  getproduits,
+  deletproduit,
+  adproduit,
+  updatePproduit,
+  chercheproduit,
 } = require("../Controlleur/Produit.js");
 
 const router = express.Router();
-
 
 router.get("/", getproduits);
 router.get("/chercher", chercheproduit);
