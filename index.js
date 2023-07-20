@@ -19,7 +19,9 @@ app.use("/api/client", client);
 
 app.use("/api/ville", ville);
 
-
+app.get("/",(req,res)=>{
+  return res.status(200).json({wefg:"ASDF"})
+})
 
 app.use("/api/commande", commande);
 app.use("/api/resteu", restau);

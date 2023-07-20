@@ -32,7 +32,7 @@ module.exports.adlivreur = (req, res, next) => {
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(mdp, salt);
     const q =
-      "INSERT INTO `livreur`(`nom`, `prenom`, `id-ville`, `email`, `url-img`, `numero`, `quota-fixe`, `quota-km`, `disponible`,mdp,`supp`) VALUES(?)";
+      "INSERT INTO `livreur`(`nom`, `prenom`, `id_ville`, `email`, `url_img`, `numero`, `quota_fixe`, `quota_km`, `disponible`,mdp,`supp`) VALUES(?)";
     const values = [
       nom,
       prenom,
@@ -56,7 +56,7 @@ module.exports.adlivreur = (req, res, next) => {
 };
 module.exports.deletlivreur = (req, res, next) => {
   const postId = req.params.id;
-  const q = "UPDATE `livreur` SET `supp`=1  WHERE `id-livreur` = ?";
+  const q = "UPDATE `livreur` SET `supp`=1  WHERE `id_livreur` = ?";
   db.query(q, [postId], (err, data) => {
     if (err) return next(err); //403
     return res.status(200).json("has been deleted");
@@ -81,7 +81,7 @@ module.exports.updatePlivreur = (req, res, next) => {
   const salt = bcrypt.genSaltSync(10);
   const hash = bcrypt.hashSync(mdp, salt);
   const q =
-    "UPDATE `livreur` SET `nom`=? , `prenom`=? , `id-ville`=? ,`email`=? , `url-img`=? , `numero`=? ,  `quota-fixe`=? , `quota-km`=? , `disponible`=? , mdp=?,`supp`=? where `id-livreur`=?";
+    "UPDATE `livreur` SET `nom`=? , `prenom`=? , `id_ville`=? ,`email`=? , `url_img`=? , `numero`=? ,  `quota_fixe`=? , `quota_km`=? , `disponible`=? , mdp=?,`supp`=? where `id_livreur`=?";
 
   const values = [
     nom,
@@ -121,7 +121,7 @@ module.exports.cherchelivreur = (req, res, next) => {
 module.exports.disactivelivreur = (req, res, next) => {
   const disactive = req.body.disactive;
   const postId = req.params.id;
-  const q = "UPDATE livreur SET  `disponible`=? where `id-livreur`=?";
+  const q = "UPDATE livreur SET  `disponible`=? where `id_livreur`=?";
   const values = [disactive, postId];
   console.log(values);
   db.query(q, [...values], (err, data) => {

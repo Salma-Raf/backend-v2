@@ -1,5 +1,5 @@
 const { db } = require("../db.js");
-const jwt = require("jsonwebtoken");
+// const jwt = require("jsonwebtoken");
 // const nodemailer = require("nodemailer");
 
 module.exports.getclients = (req, res) => {
@@ -14,7 +14,7 @@ module.exports.getclients = (req, res) => {
 module.exports.addclient = (req, res, next) => {
   const { id_client, nom_client, numero_client, ville, mdp } = req.body;
   console.log(numero_admin);
-  const q = "SELECT * FROM client WHERE `numero-client` = ?";
+  const q = "SELECT * FROM client WHERE `numero_client` = ?";
 
   db.query(q, [email_admin], (err, data) => {
     if (err) return next(err); //500
@@ -23,7 +23,7 @@ module.exports.addclient = (req, res, next) => {
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(mdp, salt);
     const q =
-      "INSERT INTO `client`(`id-client`, `nom-client`, `numero-client`, `ville`,'mdp')VALUES (?)";
+      "INSERT INTO `client`(`id_client`, `nom_client`, `numero_client`, `ville`,'mdp')VALUES (?)";
     const values = [id_client, nom_client, numero_client, ville, mdp];
 
     db.query(q, [values], (err, data) => {

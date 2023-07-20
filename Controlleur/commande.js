@@ -5,7 +5,7 @@ const { db } = require("../db.js");
 module.exports.getcommandes = (req, res) => {
   const q1 =
     req.query.datedebut && req.query.datefin
-      ? "SELECT DISTINCT  `n_panier` FROM commande  where  `date-achat`>=? and  `date-achat`<=? ORDER BY `n_panier`"
+      ? "SELECT DISTINCT  `n_panier` FROM commande  where  `date_achat`>=? and  `date_achat`<=? ORDER BY `n_panier`"
       : "SELECT DISTINCT  `n_panier` FROM commande";
 
   db.query(
@@ -18,7 +18,7 @@ module.exports.getcommandes = (req, res) => {
       let promises = [];
       for (let i = 0; i < t.length; i++) {
         const q =
-          "SELECT * FROM commande,client,produit where  produit.`id-prod`=commande.`id-produit` and commande.`id-client`=client.`id-client`  and `n_panier`=? ORDER BY `date-achat` ";
+          "SELECT * FROM commande,client,produit where  produit.`id_prod`=commande.`id_produit` and commande.`id_client`=client.`id_client`  and `n_panier`=? ORDER BY `date_achat` ";
         const promise = new Promise((resolve, reject) => {
           db.query(q, [t[i].n_panier], (err, data) => {
             if (err) reject(err);
@@ -90,7 +90,7 @@ module.exports.adcommande = (req, res) => {
 
     for (let i = 0; i < top.length; i++) {
       const q =
-        "INSERT INTO commande(`id-client`,`id-produit`,`quantite`,`vendu`,`date-achat`,n_panier,annuler,`id-livreur`) VALUES (?)";
+        "INSERT INTO commande(`id_client`,`id_produit`,`quantite`,`vendu`,`date_achat`,n_panier,annuler,`id_livreur`) VALUES (?)";
       const promise = new Promise((resolve, reject) => {
         const values = [id, top[i].id_prd, top[i].qnt];
         db.query(

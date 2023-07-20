@@ -14,7 +14,7 @@ module.exports.adproduit = (req, res, next) => {
   const { nom, prix, categorie, supp, id_restau } = req.body;
 
   const q =
-    "INSERT INTO `produit`(`id-prod`, `nom`, `prix`, `categorie`, `supp`, `id-restau`) VALUES(?)";
+    "INSERT INTO `produit`(`id_prod`, `nom`, `prix`, `categorie`, `supp`, `id_restau`) VALUES(?)";
   const values = [nom, prix, categorie, supp, id_restau];
 
   db.query(q, [values], (err, data) => {
@@ -38,7 +38,7 @@ module.exports.chercheproduit = (req, res, next) => {
 };
 module.exports.deletproduit = (req, res, next) => {
   const postId = req.params.id;
-  const q = "UPDATE `produit` SET `supp`=1 WHERE `id-prod` = ?";
+  const q = "UPDATE `produit` SET `supp`=1 WHERE `id_prod` = ?";
   db.query(q, [postId], (err, data) => {
     if (err) return next(err); //403
     return res.status(200).json("produit has been deleted!");
@@ -51,7 +51,7 @@ module.exports.updatePproduit = (req, res, next) => {
   const postId = +req.params.id;
 
   const q =
-    "UPDATE `produit` SET `nom`=? ,`prix`=? ,`categorie`=? ,`supp`=? ,`id-restau`=? WHERE `id-prod`=?";
+    "UPDATE `produit` SET `nom`=? ,`prix`=? ,`categorie`=? ,`supp`=? ,`id_restau`=? WHERE `id_prod`=?";
   const values = [nom, prix, categorie, supp, id_restau, postId];
 
   db.query(q, [...values], (err, data) => {

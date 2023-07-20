@@ -11,9 +11,9 @@ db.query(q, [], (err, data) => {
 });
 };
 module.exports. addAdmin = (req, res,next) => {
+  console.log(req.body)
   const  {nom_admin,prenom_admin,email_admin,numero_admin,url_img,role_admin,dispo_admin,mdp}=req.body
-  console.log(numero_admin)
-    const q = "SELECT * FROM admin WHERE `email-admin` = ?";
+    const q = "SELECT * FROM admin WHERE `email_admin` = ?";
 
     db.query(q, [email_admin], (err, data) => {
       if (err) return next(err)//500
@@ -22,7 +22,7 @@ module.exports. addAdmin = (req, res,next) => {
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(mdp, salt);
         const q =
-          "INSERT INTO `admin`(`nom-admin`,`prenom-admin`,`email-admin`,`numero-admin`,`url-img`,`role-admin`,`dispo-admin`,`mdp`) VALUES (?)";
+          "INSERT INTO `admin`(`nom_admin`,`prenom_admin`,`email_admin`,`numero_admin`,`url_img`,`role_admin`,`dispo_admin`,`mdp`) VALUES (?)";
         const values = [
             nom_admin ,
             prenom_admin,
@@ -36,36 +36,48 @@ module.exports. addAdmin = (req, res,next) => {
   
         db.query(q, [values], (err, data) => {
           if (err) return  next(err);
-          return res.status(200).json("User has been created.");
+        const q2="SELECT * FROM admin WHERE id_admin = (SELECT MAX(id_admin) FROM admin);"
+        db.query(q2, [], (err, data) => {
+          if (err) next(err);
+
+          return res.status(200).json(data[0]);
         });
+      });
     });
     // });
 
 };
 module.exports. deleteAdmin = (req, res,next) => {
 
-      
-      const postId = req.params.id;
-      const q = "delete  FROM admin WHERE `id-admin` = ?";
-      db.query(q, [postId], (err, data) => {
-        if (err) return next(err) //403
-        return res.status(200).json("admin has been deleted!");
-      });
+        const postId = req.params.id;
+        const q = "delete  FROM admin WHERE `id_admin` = ?";
+        db.query(q, [postId], (err, data) => {
+          if (err) return next(err) //403
+          return res.status(200).json("admin has been deleted!");
+        });
+     
 };
 module.exports.updateadmin = (req, res,next) => {
     
+  console.log(req.body)
     const  {nom_admin,prenom_admin,email_admin,numero_admin,url_img,role_admin,dispo_admin,mdp}=req.body  
-    const postId = req.params.id;
+
+    const postId =req.params.id;
     console.log(postId)
 
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(mdp, salt);
-        const q="UPDATE admin SET  `nom-admin`=? , `prenom-admin`=? ,  `email-admin`=? ,  `numero-admin`=? ,  `url-img`=? , `role-admin`=? ,  `dispo-admin`=? , mdp=?  where `id-admin`=?";
+        const q="UPDATE admin SET  `nom_admin`=? , `prenom_admin`=? ,  `email_admin`=? ,  `numero_admin`=? ,  `url_img`=? , `role_admin`=? ,  `dispo_admin`=? , mdp=?  where `id_admin`=?";
       const values = [nom_admin,prenom_admin,email_admin,numero_admin,url_img,role_admin,dispo_admin,hash,postId]
-    //   console.log(email_admin)
+       console.log(email_admin)
       db.query(q, [...values], (err, data) => {
         if (err) return next(err) //500
-        return res.json("admin  has been updated.");
+        const q2="SELECT * FROM admin WHERE id_admin =? "
+        db.query(q2, [postId], (err, data) => {
+          if (err) next(err);
+          console.log(data,"ASDf")
+          return res.status(200).json(data[0]);
+        });
       });
 };
 
@@ -73,7 +85,7 @@ module.exports.chercherAdmin=(req,res,next)=>{
 
     const partOfPrenom=req.query.prenom
     console.log(partOfPrenom)
-    const rechercheSQL = "SELECT * FROM admin WHERE `prenom-admin`	  LIKE  ?";
+    const rechercheSQL = "SELECT * FROM admin WHERE `prenom_admin`	  LIKE  ?";
 
     const rechercheValue = "%" + partOfPrenom + "%";
     console.log(rechercheValue)
@@ -93,7 +105,7 @@ module.exports.disactiverAdmin=(req,res,next)=>{
  const disactive= req.body.disactive;
   const postId = req.params.id;
 
-      const q="UPDATE admin SET  `dispo-admin`=? where `id-admin`=?";
+      const q="UPDATE admin SET  `dispo_admin`=? where `id_admin`=?";
     const values = [disactive,postId]
     db.query(q, [...values], (err, data) => {
       if (err) return next(err) //500
