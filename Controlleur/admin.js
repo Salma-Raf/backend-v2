@@ -63,7 +63,6 @@ module.exports.updateadmin = (req, res,next) => {
     const  {nom_admin,prenom_admin,email_admin,numero_admin,url_img,role_admin,dispo_admin,mdp}=req.body  
 
     const postId =req.params.id;
-    console.log(postId)
 
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(mdp, salt);

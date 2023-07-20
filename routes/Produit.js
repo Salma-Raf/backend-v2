@@ -5,7 +5,7 @@ const {
   deletproduit,
   adproduit,
   updatePproduit,
-  chercheproduit,
+  chercheproduit,disactiverAdmin
 } = require("../Controlleur/Produit.js");
 
 const router = express.Router();
@@ -13,6 +13,8 @@ const router = express.Router();
 router.get("/", getproduits);
 router.get("/chercher", chercheproduit);
 router.post("/", adproduit);
+router.post("/disactiver/:id", disactiverAdmin);
+
 router.delete("/:id", deletproduit);
 router.put("/:id", updatePproduit);
 

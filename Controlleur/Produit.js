@@ -3,7 +3,7 @@ const { db } = require("../db.js");
 const bcrypt = require("bcryptjs");
 
 module.exports.getproduits = (req, res, next) => {
-  const q = "SELECT * FROM produit ";
+  const q = "SELECT dispo,id_prod,nom,prix,categorie,produit.supp as supp_prod,produit.id_restau as id_restau,url_image,nom_restau FROM produit,restaurant  where produit.id_restau=restaurant.id_restau and produit.supp!=1";
 
   db.query(q, [], (err, data) => {
     if (err) return next(err);
@@ -11,20 +11,22 @@ module.exports.getproduits = (req, res, next) => {
   });
 };
 module.exports.adproduit = (req, res, next) => {
-  const { nom, prix, categorie, supp, id_restau } = req.body;
-
+  const { nom, prix, categorie, supp, id_restau ,dispo,url_image} = req.body;
   const q =
-    "INSERT INTO `produit`(`id_prod`, `nom`, `prix`, `categorie`, `supp`, `id_restau`) VALUES(?)";
-  const values = [nom, prix, categorie, supp, id_restau];
-
+    "INSERT INTO `produit`(`nom`, `prix`, `categorie`, `supp`, `id_restau`,`dispo`,`url_image`) VALUES(?)";
+  const values = [nom, +prix, categorie, supp,+id_restau,dispo,url_image];
+console.log(values)
   db.query(q, [values], (err, data) => {
     if (err) return next(err);
-    return res.status(200).json("product has been created.");
-  });
+    const q2="SELECT  dispo,id_prod,nom,prix,categorie,produit.supp as supp_prod,produit.id_restau as id_restau,url_image,nom_restau FROM produit,restaurant  where produit.id_restau=restaurant.id_restau  and id_prod = (SELECT MAX(id_prod) FROM produit);"
+    db.query(q2, [], (err, data) => {
+      if (err) next(err);
+      return res.status(200).json(data[0]);
+    });  });
 };
 module.exports.chercheproduit = (req, res, next) => {
   const partOfPrenom = req.query.nom;
-  const rechercheSQL = "SELECT * FROM produit WHERE `nom`  LIKE  ?";
+  const rechercheSQL = "SELECT dispo,id_prod,nom,prix,categorie,produit.supp as supp_prod,produit.id_restau as id_restau,url_image,nom_restau FROM produit,restaurant  where produit.id_restau=restaurant.id_restau and produit.supp!=1 and `nom`  LIKE  ?";
 
   const rechercheValue = "%" + partOfPrenom + "%";
 
@@ -58,4 +60,20 @@ module.exports.updatePproduit = (req, res, next) => {
     if (err) return next(err); //500
     return res.json("product has been updated.");
   });
-};
+}
+
+
+  module.exports.disactiverAdmin=(req,res,next)=>{
+
+      const disactive= req.body.disactive;
+      const postId = req.params.id;
+    
+          const q="UPDATE produit SET  `dispo`=? where `id_prod`=?";
+        const values = [disactive,postId]
+        db.query(q, [...values], (err, data) => {
+          if (err) return next(err) //500
+          return res.json("admin  has been updated.");
+        });
+     
+   
+  }

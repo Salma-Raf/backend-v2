@@ -4,6 +4,7 @@ const admin = require("./routes/Admin.js");
 const client = require("./routes/client.js");
 const livreur = require("./routes/livreur.js");
 const ville=require("./routes/ville.js")
+const produit=require("./routes/Produit.js")
 
 const commande=require("./routes/commande.js")
 
@@ -25,6 +26,8 @@ app.get("/",(req,res)=>{
 
 app.use("/api/commande", commande);
 app.use("/api/resteu", restau);
+
+app.use("/api/produit", produit);
 
 app.use("/api/livreur", livreur);
 
