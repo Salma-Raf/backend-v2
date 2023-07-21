@@ -50,6 +50,7 @@ module.exports.deletproduit = (req, res, next) => {
 module.exports.updatePproduit = (req, res, next) => {
   const { nom, prix, categorie, supp, id_restau } = req.body;
 
+  console.log({ nom, prix, categorie, supp, id_restau },"asd")
   const postId = +req.params.id;
 
   const q =
@@ -58,7 +59,12 @@ module.exports.updatePproduit = (req, res, next) => {
 
   db.query(q, [...values], (err, data) => {
     if (err) return next(err); //500
-    return res.json("product has been updated.");
+
+    const q2="SELECT dispo,id_prod,nom,prix,categorie,produit.supp as supp_prod,produit.id_restau as id_restau,url_image,nom_restau FROM produit,restaurant  where produit.id_restau=restaurant.id_restau and produit.supp!=1 and id_prod =? "
+    db.query(q2, [postId], (err, data) => {
+      if (err) next(err);
+      return res.status(200).json(data[0]);
+    });
   });
 }
 
@@ -77,3 +83,34 @@ module.exports.updatePproduit = (req, res, next) => {
      
    
   }
+
+
+  module.exports.chercheprt = (req, res, next) => {
+    
+    const partOfPrenom =+ req.query.id;
+    if(partOfPrenom){
+      const rechercheSQL = "SELECT dispo,id_prod,nom,prix,categorie,produit.supp as supp_prod,produit.id_restau as id_restau,url_image,nom_restau FROM produit,restaurant  where produit.id_restau=restaurant.id_restau and produit.supp!=1 and produit.id_restau=?";
+  
+      const rechercheValue =   partOfPrenom ;
+    
+      // Exécutez la requête avec le prénom en tant que paramètre
+      db.query(rechercheSQL, [rechercheValue], (err, resultats) => {
+        if (err) {
+          next(err);
+        }
+        return res.status(200).json(resultats);
+      });
+    }
+    else{
+
+      const q = "SELECT dispo,id_prod,nom,prix,categorie,produit.supp as supp_prod,produit.id_restau as id_restau,url_image,nom_restau FROM produit,restaurant  where produit.id_restau=restaurant.id_restau and produit.supp!=1";
+
+      db.query(q, [], (err, data) => {
+        if (err) return next(err);
+        return res.status(200).json(data);
+      });
+    }
+   
+  };
+
+  
