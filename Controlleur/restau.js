@@ -1,7 +1,7 @@
 const { db } = require("../db.js");
 const bcrypt = require("bcryptjs");
 
-module.exports.getrestau = (req, res) => {
+module.exports.getrestau = (req, res,next) => {
     
     const q = "SELECT * FROM restaurant where supp!=1";
 

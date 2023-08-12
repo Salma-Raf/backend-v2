@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.get("/", getlivreur);
 router.get("/chercher", cherchelivreur);
-router.get("/disactiver", disactivelivreur);
+router.post("/disactiver/:id", disactivelivreur);
 router.post("/", adlivreur);
 router.delete("/:id", deletlivreur);
 router.put("/:id", updatePlivreur);

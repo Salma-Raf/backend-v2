@@ -5,6 +5,7 @@ const client = require("./routes/client.js");
 const livreur = require("./routes/livreur.js");
 const ville=require("./routes/ville.js")
 const produit=require("./routes/Produit.js")
+const Produit_restau2=require("./routes/Produit2.js")
 
 const commande=require("./routes/commande.js")
 
@@ -19,9 +20,16 @@ app.use("/api/admin", admin);
 app.use("/api/client", client);
 
 app.use("/api/ville", ville);
-
+app.use("/api/produit2", Produit_restau2);
 app.get("/",(req,res)=>{
-  return res.status(200).json({wefg:"ASDF"})
+    return res.status(200).json({wefg:"ASDF"})
+
+})
+app.get("/x",(req,res)=>{
+  setTimeout(()=>{
+    return res.status(200).json({wefg:"ASDF"})
+
+  },10000)
 })
 
 app.use("/api/commande", commande);

@@ -18,7 +18,7 @@ module.exports.getcommandes = (req, res) => {
       let promises = [];
       for (let i = 0; i < t.length; i++) {
         const q =
-          "SELECT * FROM commande,client,produit where  produit.`id_prod`=commande.`id_produit` and commande.`id_client`=client.`id_client`  and `n_panier`=? ORDER BY `date_achat` ";
+          "SELECT * FROM commande,client,produit,livreur,ville,restaurant   where  produit.`id_prod`=commande.`id_produit` and livreur.id_livreur=commande.id_livreur and  ville.id_ville=livreur.id_ville and  commande.`id_client`=client.`id_client` and produit.`id_restau`=restaurant.`id_restau`  and `n_panier`=? ORDER BY `date_achat` ";
         const promise = new Promise((resolve, reject) => {
           db.query(q, [t[i].n_panier], (err, data) => {
             if (err) reject(err);
@@ -27,27 +27,34 @@ module.exports.getcommandes = (req, res) => {
             var panie = [];
             var sum = 0;
             var annuler = true;
-            var livraison = 0;
+            var livraison=null  
+              livraison=data[0].prix_taxe
+             var    prix_livraison_taoufik=  data[0].prix_livraison_ville	-livraison 
+            // console.log(data[0].tarif)
             for (let j = 0; j < data.length; j++) {
-              ob.nom = data[j].nom_client;
+               
+              ob.nom_client = data[j].nom_client;
+              ob.nom_livreur=data[j].nom_livreur
               ob.id_panier = data[j].n_panier;
               ob.vendu = data[j].vendu;
-              ob.numero = data[j].numero_client;
+              ob.numero_client = data[j].numero_client;
               panie.push([data[j].nom, data[j].prix, data[j].quantite]);
               sum += data[j].prix * data[j].quantite;
               annuler = annuler && data[j].annuler === 1;
-              livraison += data[j].livre;
             }
-            ob.prix_total = sum;
+            console.log(sum*data[0].tarif_cmd*1/100)
+            ob.prix_total = sum+data[0].prix_livraison_ville;
             ob.panie = panie;
             ob.annuler = annuler ? 1 : 0;
-            ob.livraison = livraison;
-
+            ob.livraison_livre = livraison;
+            ob.livraison_taoufik=prix_livraison_taoufik
+            ob.rbah_taoufik=prix_livraison_taoufik+sum*data[0].tarif_cmd*1/100
+            
+            // console.log(sum*data[0].tarif*sum/100,"A",data[0].tarif,sum)
             tab.push(ob);
 
-            console.log(tab[0].numero_client);
             if (
-              tab[0].nom &&
+              tab[0].nom_client &&
               // tab[0].numero_client &&
               tab[0].prix_total &&
               tab[0].panie[0].length == 3
@@ -61,11 +68,10 @@ module.exports.getcommandes = (req, res) => {
 
       Promise.all(promises)
         .then((results) => {
-          console.log(results);
           let tab = [];
           for (let i = 0; i < results.length; i++) {
             if (results[i]) {
-              tab.push(results[i]);
+              tab.push(results[i][0]);
             }
           }
           return res.status(200).json(tab);
@@ -129,4 +135,154 @@ module.exports.disactivercommande = (req, res) => {
     if (err) return next(err);
     return res.json("commentde  has been updated.");
   });
+};
+
+module.exports.getcalcule = (req, res,next) => {
+
+   const q1 = "SELECT DISTINCT `id_restau` FROM  produit,commande where produit.id_prod=commande.id_produit  and payee=0 and  annuler!=1";
+
+  db.query(
+    q1,
+    [],
+    (err, data) => {
+      if (err) return res.status(500).send(err);
+
+      var t = data;
+      let promises = [];
+      for (let i = 0; i < t.length; i++) {
+        const q ="SELECT * FROM commande,produit,restaurant where produit.`id_prod`=commande.`id_produit` and produit.`id_restau`=restaurant.`id_restau` and payee=0 and restaurant.id_restau=? and annuler!=1";
+        const promise = new Promise((resolve, reject) => {
+          db.query(q, [t[i].id_restau], (err, data) => {
+            if (err) reject(err);
+            var tab = [];
+            var ob = {};
+            var sum = 0;
+            ob.nom_restau=data[0]?.nom_restau
+            for (let j = 0; j < data.length; j++) {
+              sum+=data[j].prix*data[j].quantite*(100-data[j].tarif_cmd)/100
+            }
+            ob.prix_total=sum
+            ob.id_restau=data[0]?.id_restau
+            tab.push(ob);
+            if (
+            true
+            ) {
+              resolve(tab);
+            } else reject(null);           
+          });
+        });
+        promises.push(promise);
+      }
+
+      Promise.all(promises)
+        .then((results) => {
+          let tab = [];
+          for (let i = 0; i < results.length; i++) {
+            if (results[i]) {
+              tab.push(results[i][0]);
+            }
+        }
+          return res.status(200).json(tab);
+        })
+        .catch((err) => {
+          return res.status(500).send(err);
+        });
+    }
+  );
+
+};
+
+
+
+module.exports.credit = (req, res,next) => {
+  console.log(id_restau)
+ const q="update commande,produit,restaurant set payee=1 where commande.id_produit=produit.id_prod and restaurant.id_restau=produit.id_restau and restaurant.id_restau=?";
+    db.query(q, [id_restau], (err, data) => {
+      if (err) return next(err) //500
+      return res.json("commande  has been updated.");
+    });
+ 
+const id_restau=+req.params.id
+
+};
+
+
+
+module.exports.getcommandes_par_restau = (req, res) => {
+  id_restau=1;
+  const q1 =
+    req.query.datedebut && req.query.datefin
+      ? "SELECT DISTINCT  `n_panier` FROM commande,produit,restaurant  where  produit.`id_prod`=commande.`id_produit` and  produit.`id_restau`=restaurant.`id_restau` and  restaurant.id_restau=? and `date_achat`>=? and  `date_achat`<=?    ORDER BY `n_panier`  "
+      : "SELECT DISTINCT  `n_panier` FROM commande,produit,restaurant  where  produit.`id_prod`=commande.`id_produit` and  produit.`id_restau`=restaurant.`id_restau` and  restaurant.id_restau=?  ORDER BY `n_panier`  ";
+
+  db.query(
+    q1,
+    [id_restau,new Date(req.query.datedebut), new Date(req.query.datefin)],
+    (err, data) => {
+      if (err) return res.status(500).send(err);
+
+      var t = data;
+      console.log(t)
+      let promises = [];
+      for (let i = 0; i < t.length; i++) {
+        const q =
+          "SELECT * FROM commande,client,produit,livreur,ville,restaurant   where  produit.`id_prod`=commande.`id_produit` and livreur.id_livreur=commande.id_livreur and  ville.id_ville=livreur.id_ville and  commande.`id_client`=client.`id_client` and produit.`id_restau`=restaurant.`id_restau`  and `n_panier`=? ORDER BY `date_achat` ";
+        const promise = new Promise((resolve, reject) => {
+          db.query(q, [t[i].n_panier], (err, data) => {
+            if (err) reject(err);
+            var tab = [];
+            var ob = {};
+            var panie = [];
+            var sum = 0;
+            var annuler = true;
+            var livraison=null  
+              livraison=data[0].prix_taxe
+             var    prix_livraison_taoufik=  data[0].prix_livraison_ville	-livraison 
+            // console.log(data[0].tarif)
+            for (let j = 0; j < data.length; j++) {
+              ob.payee=data[j].payee 
+              ob.nom_client = data[j].nom_client;
+              ob.nom_livreur=data[j].nom_livreur
+              ob.id_panier = data[j].n_panier;
+              ob.vendu = data[j].vendu;
+              ob.numero_client = data[j].numero_client;
+              panie.push([data[j].nom, data[j].prix, data[j].quantite]);
+              sum += data[j].prix * data[j].quantite;
+              annuler = annuler && data[j].annuler === 1;
+            }
+            console.log(sum*data[0].tarif_cmd*1/100)
+            ob.panie = panie;
+            ob.annuler = annuler ? 1 : 0;
+            // ob.livraison_livre = livraison;
+            // ob.livraison_taoufik=prix_livraison_taoufik
+            ob.rbah_resteau=sum*(100-data[0].tarif_cmd)*1/100
+            
+            tab.push(ob);
+            if (
+              tab[0].nom_client &&
+              // tab[0].numero_client &&
+              tab[0].panie[0].length == 3
+            ) {
+              resolve(tab);
+            } else reject(null);
+          });
+        });
+        promises.push(promise);
+      }
+
+      Promise.all(promises)
+        .then((results) => {
+          let tab = [];
+          for (let i = 0; i < results.length; i++) {
+            if (results[i]) {
+              tab.push(results[i][0]);
+            }
+          }
+          return res.status(200).json(tab);
+        })
+        .catch((err) => {
+          return res.status(500).send(err);
+        });
+    }
+  );
 };
